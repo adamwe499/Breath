@@ -1,0 +1,25 @@
+<form class="d-flex flex-column" [formGroup]="form">
+  <!--  *ngIf="isRun" -->
+  <mat-form-field>
+    <mat-label>Звук</mat-label>
+    <mat-select formControlName="soundFc">
+      <mat-option *ngFor="let sound of sounds; let i = index" [value]="sound.value"> {{sound.title}} </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Режим воспроизведения</mat-label>
+    <mat-select formControlName="modeFc">
+      <mat-option *ngFor="let mode of modes; let i = index" [value]="mode.value"> {{mode.title}} </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <section class="example-section">
+    <mat-checkbox formControlName="deferStartFC">Отложенный запуск</mat-checkbox>
+  </section>
+  <span *ngIf="countdown">{{countdown}}</span>
+  <div>
+    <span>Цикл: {{ circleIndex + 1}} {{ counter }}</span>&nbsp;
+    <span *ngIf="isRun && countdown === 0">{{ isBreath ? 'Вдыхаем...' : 'Выдыхаем...' }}</span>
+  </div>
+  <button mat-raised-button color="primary" (click)="onClick()">{{ isRun ? 'Стоп': 'Старт'}}</button>
+</form>
