@@ -1,25 +1,34 @@
-<form class="d-flex flex-column" [formGroup]="form">
-  <!--  *ngIf="isRun" -->
-  <mat-form-field>
-    <mat-label>Звук</mat-label>
-    <mat-select formControlName="soundFc">
-      <mat-option *ngFor="let sound of sounds; let i = index" [value]="sound.value"> {{sound.title}} </mat-option>
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field>
-    <mat-label>Режим воспроизведения</mat-label>
-    <mat-select formControlName="modeFc">
-      <mat-option *ngFor="let mode of modes; let i = index" [value]="mode.value"> {{mode.title}} </mat-option>
-    </mat-select>
-  </mat-form-field>
+<main>
+  <form class="d-flex flex-column" [formGroup]="form">
+    <img class="logo" src="assets/dss_logo.png" />
+    <hr/>
+    <mat-form-field>
+      <mat-label>Звук</mat-label>
+      <mat-select formControlName="soundFc">
+        <mat-option *ngFor="let sound of sounds; let i = index" [value]="sound.value"> {{sound.title}} </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Режим воспроизведения</mat-label>
+      <mat-select formControlName="modeFc">
+        <mat-option *ngFor="let mode of modes; let i = index" [value]="mode.value"> {{mode.title}} </mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <section class="example-section">
     <mat-checkbox formControlName="deferStartFC">Отложенный запуск</mat-checkbox>
-  </section>
-  <span *ngIf="countdown">{{countdown}}</span>
-  <div>
-    <span>Цикл: {{ circleIndex + 1}} {{ counter }}</span>&nbsp;
-    <span *ngIf="isRun && countdown === 0">{{ isBreath ? 'Вдыхаем...' : 'Выдыхаем...' }}</span>
-  </div>
-  <button mat-raised-button color="primary" (click)="onClick()">{{ isRun ? 'Стоп': 'Старт'}}</button>
-</form>
+
+    <hr/>
+
+    <div class="d-flex justify-content-center">
+      <span>Цикл: {{ circleIndex + 1}} {{ counter }}</span>&nbsp;
+      <span *ngIf="isRun && countdown === 0">{{ isBreath ? 'Вдыхаем...' : 'Выдыхаем...' }}</span>
+    </div>
+
+    <div class="animation-container d-flex">
+      <div class="animation" [@breathAnim]="isBreath ? 'breath' : 'exhail'">
+        <span *ngIf="countdown" class="countdown">{{countdown}}</span>
+      </div>
+    </div>
+    <button mat-raised-button color="primary" (click)="onClick()">{{ isRun ? 'Стоп': 'Старт'}}</button>
+  </form>
+</main>

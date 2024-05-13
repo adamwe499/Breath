@@ -1,3 +1,4 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
@@ -10,7 +11,7 @@ const SOUNDS = [{
   title: 'Громче'
 },{ 
   value: 'sound3',
-  title: 'Шромкий'
+  title: 'Громкий'
 }]
 const MODES = [{ 
   value: 0,
@@ -35,24 +36,44 @@ const halfBreathMS = breathMS / 2
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
-  styleUrls: ['./main.component.scss']
+  styleUrls: ['./main.component.scss'],
+  animations: [
+    trigger('breathAnim', [
+      state('exhail', style({
+        height: '50px',
+        width: '50px',
+        opacity: 0.2,
+        background: 'red'
+      })),
+      state('breath', style({
+        height: '200px',
+        width: '200px',
+        opacity: 1,
+        background: 'yellow',
+      })),
+      transition('breath <=> exhail', [
+        animate(`${halfBreathMS / 1000}s`)
+      ]),
+  ])
+]
 })
 export class AppMainComponent implements OnInit {
   counter = 1;
   tickCounter = 0;
-  isBreath = true;
+  isBreath = false;
   isRun = false;
   circles = [...CIRCLES]
   circleIndex = 0;
-  countdown = 3;
+  countdown = 0;
   private audio: HTMLAudioElement = new Audio();
   private intervalId!: ReturnType<typeof setInterval>;
+  private countDownId!: ReturnType<typeof setTimeout>
   modes = MODES
   sounds = SOUNDS
   
   modeFc = new FormControl<number>(this.modes[1].value);
   soundFc = new FormControl<string>(this.sounds[0].value);
-  deferStartFC = new FormControl<boolean>(true);
+  deferStartFC = new FormControl<boolean>(false);
   form = new FormGroup({
     modeFc: this.modeFc,
     soundFc: this.soundFc,
@@ -65,8 +86,6 @@ export class AppMainComponent implements OnInit {
   }
 
   loadSound(name: any) {
-    console.log(name);
-    
     this.audio.src = `../../../assets/${name}.mp3`;
     this.audio.load();
   }
@@ -79,9 +98,11 @@ export class AppMainComponent implements OnInit {
   stop() {
     this.form.enable()
     clearInterval(this.intervalId)
+    clearTimeout(this.countDownId)
     this.counter = 1
     this.tickCounter = 0
-    this.countdown = 3
+    this.countdown = 0
+    this.isBreath = false;
     this.circles = [...CIRCLES]
     this.circleIndex = 0
   }
@@ -99,7 +120,6 @@ export class AppMainComponent implements OnInit {
 
   start() {
     this.form.disable()
-    this.countdown = 3
     if(this.deferStartFC.value) {
       this.countdown = 3
       this.deferRun()
@@ -110,11 +130,12 @@ export class AppMainComponent implements OnInit {
 
   run() {
     this.audio.play();
+    this.isBreath = true
     this.intervalId = setInterval(() => this.tick(), halfBreathMS);
   }
 
   deferRun() {
-    setTimeout(() => {
+    this.countDownId = setTimeout(() => {
       this.countdown--
       this.countdown === 0 ? this.run() : this.deferRun()
     }, 900)
@@ -136,8 +157,6 @@ export class AppMainComponent implements OnInit {
       }
     }
     this.tickCounter++
-    console.log(this.tickCounter, this.tickCounter % 14);
-    
     this.playSound();
   }
 
